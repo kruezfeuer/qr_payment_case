@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant Merchant as Система торговой точки
+    participant App as Банковское приложение
+    participant Service as Сервис приёма платежей по QR-коду
+    participant Provider as Внешняя платёжная инфраструктура
+
+    Merchant->>Service: POST /payment-requests
+    Service-->>Merchant: paymentRequestId, qrReference, expiresAt
+
+    App->>Service: GET /payment-requests/{qrReference}
+    Service-->>App: данные платёжного запроса
+
+    App->>Service: POST /payment-requests/{paymentRequestId}/confirm
+    Service->>Provider: передача операции на обработку
+    Provider-->>Service: результат обработки
+
+    Service-->>App: статус операции
+    Service-->>Merchant: уведомление о результате

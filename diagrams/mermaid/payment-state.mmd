@@ -1,0 +1,26 @@
+stateDiagram-v2
+    state "Создана" as CREATED
+    state "В обработке" as PROCESSING
+    state "Результат неизвестен" as UNKNOWN
+    state "Успешно" as SUCCEEDED
+    state "Отказ" as DECLINED
+    state "Техническая ошибка" as FAILED
+
+    [*] --> CREATED
+
+    CREATED --> PROCESSING: Передача на обработку
+    CREATED --> FAILED: Подтверждена ошибка до проведения
+
+    PROCESSING --> SUCCEEDED: Подтверждён успех
+    PROCESSING --> DECLINED: Подтверждён отказ
+    PROCESSING --> FAILED: Подтверждено отсутствие проведения
+    PROCESSING --> UNKNOWN: Тайм-аут, результат не определён
+
+    UNKNOWN --> PROCESSING: Внешняя система подтвердила обработку
+    UNKNOWN --> SUCCEEDED: Подтверждён успех
+    UNKNOWN --> DECLINED: Подтверждён отказ
+    UNKNOWN --> FAILED: Подтверждено отсутствие проведения
+
+    SUCCEEDED --> [*]
+    DECLINED --> [*]
+    FAILED --> [*]

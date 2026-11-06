@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT">
+  <diagram id="erdqr" name="ERD — Модель данных QR-платежей">
+    <mxGraphModel dx="1937" dy="1029" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2050" pageHeight="930" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e_merchant" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;Merchant&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; merchant_id: UUID&lt;br&gt;merchant_code: VARCHAR(64) UNIQUE&lt;br&gt;display_name: VARCHAR(200)&lt;br&gt;status: VARCHAR(20)&lt;br&gt;created_at: TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="220" width="330" x="50" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="e_request" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;PaymentRequest&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; payment_request_id: UUID&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; merchant_id: UUID&lt;br&gt;merchant_order_id: VARCHAR(100)&lt;br&gt;amount: DECIMAL(18,2)&lt;br&gt;currency: CHAR(3)&lt;br&gt;description: VARCHAR(255), NULL&lt;br&gt;qr_reference: UUID UNIQUE&lt;br&gt;status: VARCHAR(16)&lt;br&gt;create_idempotency_key: VARCHAR(128)&lt;br&gt;created_at: TIMESTAMPTZ&lt;br&gt;expires_at: TIMESTAMPTZ&lt;br&gt;paid_at: TIMESTAMPTZ, NULL" vertex="1">
+          <mxGeometry height="360" width="430" x="450" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e_operation" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;PaymentOperation&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; payment_operation_id: UUID&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; payment_request_id: UUID&lt;br&gt;attempt_no: INTEGER&lt;br&gt;payer_reference: VARCHAR(128), NULL&lt;br&gt;amount: DECIMAL(18,2)&lt;br&gt;currency: CHAR(3)&lt;br&gt;status: VARCHAR(16)&lt;br&gt;external_operation_id: VARCHAR(128), NULL&lt;br&gt;confirmation_idempotency_key: VARCHAR(128)&lt;br&gt;failure_code: VARCHAR(64), NULL&lt;br&gt;created_at: TIMESTAMPTZ&lt;br&gt;updated_at: TIMESTAMPTZ&lt;br&gt;completed_at: TIMESTAMPTZ, NULL" vertex="1">
+          <mxGeometry height="400" width="445" x="980" y="75" as="geometry" />
+        </mxCell>
+        <mxCell id="e_prhist" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;PaymentRequestStatusHistory&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; history_id: UUID&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; payment_request_id: UUID&lt;br&gt;old_status: VARCHAR(16), NULL&lt;br&gt;new_status: VARCHAR(16)&lt;br&gt;reason_code: VARCHAR(64), NULL&lt;br&gt;source: VARCHAR(32)&lt;br&gt;changed_at: TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="220" width="430" x="450" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ophist" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;PaymentOperationStatusHistory&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; history_id: UUID&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; payment_operation_id: UUID&lt;br&gt;old_status: VARCHAR(16), NULL&lt;br&gt;new_status: VARCHAR(16)&lt;br&gt;reason_code: VARCHAR(64), NULL&lt;br&gt;source: VARCHAR(32)&lt;br&gt;changed_at: TIMESTAMPTZ" vertex="1">
+          <mxGeometry height="220" width="445" x="980" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="e_notify" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#657B8A;strokeWidth=1.5;fontFamily=Arial;fontSize=12;align=left;verticalAlign=top;spacing=10;" value="&lt;b&gt;MerchantNotification&lt;/b&gt;&lt;hr&gt;&lt;b&gt;PK&lt;/b&gt; notification_id: UUID&lt;br&gt;&lt;b&gt;FK&lt;/b&gt; payment_operation_id: UUID&lt;br&gt;event_id: VARCHAR(128) UNIQUE&lt;br&gt;event_type: VARCHAR(64)&lt;br&gt;delivery_status: VARCHAR(20)&lt;br&gt;attempt_count: INTEGER&lt;br&gt;created_at: TIMESTAMPTZ&lt;br&gt;last_attempt_at: TIMESTAMPTZ, NULL&lt;br&gt;next_attempt_at: TIMESTAMPTZ, NULL&lt;br&gt;delivered_at: TIMESTAMPTZ, NULL" vertex="1">
+          <mxGeometry height="300" width="430" x="1510" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="2" edge="1" parent="1" source="e_merchant" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#617989;strokeWidth=1.5;fontFamily=Arial;fontSize=12;labelBackgroundColor=#FFFFFF;" target="e_request" value="1 : N">
+          <mxGeometry relative="1" x="-0.1429" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="400" y="270" />
+              <mxPoint x="400" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="3" edge="1" parent="1" source="e_request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#617989;strokeWidth=1.5;fontFamily=Arial;fontSize=12;labelBackgroundColor=#FFFFFF;" target="e_operation" value="1 : N">
+          <mxGeometry relative="1" y="-10" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="950" y="280" />
+              <mxPoint x="950" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4" edge="1" parent="1" source="e_request" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#617989;strokeWidth=1.5;fontFamily=Arial;fontSize=12;labelBackgroundColor=#FFFFFF;" target="e_prhist" value="1 : N">
+          <mxGeometry relative="1" x="0.1111" y="25" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="665" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5" edge="1" parent="1" source="e_operation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#617989;strokeWidth=1.5;fontFamily=Arial;fontSize=12;labelBackgroundColor=#FFFFFF;" target="e_ophist" value="1 : N">
+          <mxGeometry relative="1" x="0.0769" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1200" y="520" />
+              <mxPoint x="1200" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="6" edge="1" parent="1" source="e_operation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#617989;strokeWidth=1.5;fontFamily=Arial;fontSize=12;labelBackgroundColor=#FFFFFF;" target="e_notify" value="1 : N">
+          <mxGeometry relative="1" x="-0.0476" y="20" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1460" y="265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
